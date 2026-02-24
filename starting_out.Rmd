@@ -44,10 +44,17 @@ sf::sf_use_s2(FALSE) # disables s2 geometry in the sf package.
 
 ```
 
+## Load the main ZSI faunal list
+
+```{r }
+
+## 
+zsi_fauna <- read_csv(file.path(wd$raw, "zsi_faunal_list/zsi_faunal_list.csv")) %>%
+  rename(scientificName = species) %>% dplyr::select(scientificName, kingdom)
+
+zsi_backbone <- name_backbone_checklist(zsi_fauna, verbose = T)
 
 
-```{r cars}
-summary(cars)
 ```
 
 ## Including Plots
