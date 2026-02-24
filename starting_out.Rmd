@@ -1,0 +1,61 @@
+---
+title: "starting_out"
+author: "anuj s"
+date: "2026-02-24"
+output: html_document
+---
+
+```{r warning = F, message = F}
+
+## packages
+library(tidyverse)
+library(sf)
+library(AmphiNom)
+library(rgbif)
+library(devtools)
+library(rnaturalearth)
+library(rnaturalearthhires)
+
+## Retrieve the paths specific to the machine I am using.
+host <- Sys.info()[["nodename"]]
+
+if (host == "ANUJ-PC") {
+  base_path <- "C:/Users/Anuj Shinde/OneDrive - Australian National University"
+} else if (host == "RSB-088702") {
+  base_path <- "C:/Users/u8007407/OneDrive - Australian National University"
+} else if (host == "rsb0001147") {
+  base_path <- "onedrive://bf21b313-5537-4a7c-a787-0949e4040392/OneDrive/Project%20DataFiles/biodiv_data_gaps"
+} else {
+  stop("Unknown machine — please define paths for this system.")
+}
+
+## Set all paths (external or internal)
+wd <- list()
+wd$raw <- file.path(base_path, "Project DataFiles",
+                     "biodiv_data_gaps","raw_files") #general folder
+wd$data <- file.path(base_path, "Project DataFiles",
+                     "biodiv_data_gaps","data") #general folder
+wd$output <- file.path(base_path, "Project DataFiles",
+                       "biodiv_data_gaps","output") #general folder
+wd$starting_out <- file.path(base_path, "Project DataFiles",
+                       "biodiv_data_gaps","starting_out") #script specific folder
+
+sf::sf_use_s2(FALSE) # disables s2 geometry in the sf package.
+
+```
+
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
