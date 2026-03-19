@@ -48,10 +48,16 @@ sf::sf_use_s2(FALSE) # disables s2 geometry in the sf package.
 
 ```{r }
 
-## 
-zsi_fauna <- read_csv(file.path(wd$raw, "zsi_faunal_list/zsi_faunal_list.csv")) %>%
-  rename(scientificName = species) %>% dplyr::select(scientificName, kingdom)
+## Load ZSI faunal checklist
+zsi_fauna <- read_csv(file.path(wd$raw, "zsi_faunal_list/zsi_faunal_list.csv"))
 
+## Remove duplicates
+zsi_fauna <-  zsi_fauna %>%
+  distinct(species, .keep_all =T) %>%
+  rename(scientificName = species) %>% 
+  dplyr::select(scientificName, kingdom)
+
+## Run the GBIF command
 zsi_backbone <- name_backbone_checklist(zsi_fauna, verbose = T)
 
 
