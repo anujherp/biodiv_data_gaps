@@ -15,6 +15,7 @@ library(rgbif)
 library(devtools)
 library(rnaturalearth)
 library(rnaturalearthhires)
+library(readxl)
 
 ## Retrieve the paths specific to the machine I am using.
 host <- Sys.info()[["nodename"]]
@@ -57,18 +58,57 @@ zsi_fauna <-  zsi_fauna %>%
   rename(scientificName = species) %>% 
   dplyr::select(scientificName, kingdom)
 
-## Run the GBIF command
-zsi_backbone <- name_backbone_checklist(zsi_fauna, verbose = T)
+## Match ZSI names to the GBIF backbone (took ~7 hours to complete)
+zsi_backbone <- map2_dfr(
+  zsi_fauna$scientificName,
+  zsi_fauna$kingdom,
+  ~ rgbif::name_backbone(name = .x, kingdom = .y),
+  .id = NULL
+)
+
+zsi_backbone <- read_csv(file.path(wd$data, "zsi_matched_to_gbif/zsi_backbone.csv"))
 
 
 ```
 
-## Including Plots
+## Preparing for occurrence download
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+```{r }
+
+## Load the matched species list
+matched_list <- read_excel(file.path(wd$data, "zsi_matched_to_gbif/zsi_matched_to_backbone.xlsx"), 
+                        sheet = "zsi_backbone", 
+                        col_types = "text") %>%
+  filter(phylum %in% c("Arthropoda", "Mollusca", "Chordata")) %>%
+  filter(rank == "SPECIES")
+
+### To filter out unmatched species (Na in species column) and to retain only Animalia.
+## I will remove the duplicated species
+
+matched_list <- matched_list %>%
+  filter(class == "Amphibia") %>% drop_na(species) %>%
+  distinct(speciesKey, .keep_all = T)
+
+counts <- sapply(as.integer(matched_list$speciesKey[1:10]), function(key) {
+  occ_count(speciesKey = key, country ="IN")
+})
+sum(counts)
+# Your vector of species keys from ZSI matching
+species_keys <- c(2440934, 2440935, 2440936, ...)  # Your matched keys
+
+# Create download request
+download_key <- occ_download(
+  pred_in("taxonKey", species_keys),
+  pred("country", "IN"),  # Optional: restrict to India
+  pred("hasCoordinate", TRUE),  # Optional: only georeferenced records
+  format = "SIMPLE_CSV",
+  user = "your_gbif_username",
+  pwd = "your_password",
+  email = "your_email@example.com"
+)
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
