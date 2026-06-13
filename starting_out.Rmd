@@ -108,4 +108,26 @@ download_key <- occ_download(
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r Using GbifDB}
+
+library(gbifdb)
+library(dplyr)
+
+gbif <- gbif_remote()
+
+# Get occurrence counts per species in India
+ranix_counts <- gbif %>%
+  filter(countrycode == "IN",
+         family %in% c("Ranixalidae"),
+         !is.na(decimallatitude),
+         !is.na(decimallongitude)) %>%
+  group_by(specieskey, species, phylum, class) %>%
+  summarise(n_records = n(), .groups = "drop") %>%
+  collect()
+
+# Now you have a small data frame with counts per species
+# without ever downloading the raw records
+
+
+
+```
