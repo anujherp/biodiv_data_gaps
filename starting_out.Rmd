@@ -71,9 +71,7 @@ zsi_backbone <- read_csv(file.path(wd$data, "zsi_matched_to_gbif/zsi_backbone.cs
 
 ```
 
-## Preparing for occurrence download
-
-
+## Filtering the focal taxonomic groups from the matched list
 
 ```{r }
 
@@ -81,8 +79,7 @@ zsi_backbone <- read_csv(file.path(wd$data, "zsi_matched_to_gbif/zsi_backbone.cs
 matched_list <- read_excel(file.path(wd$data, "zsi_matched_to_gbif/zsi_matched_to_backbone.xlsx"), 
                         sheet = "zsi_backbone", 
                         col_types = "text") %>%
-  filter(phylum %in% c("Arthropoda", "Mollusca", "Chordata")) %>%
-  filter(rank == "SPECIES")
+  filter(phylum %in% c("Arthropoda", "Mollusca", "Chordata", "NA")) 
 
 ### To filter out unmatched species (Na in species column) and to retain only Animalia.
 ## I will remove the duplicated species
